@@ -1,0 +1,23 @@
+{
+  "name": "kanban-todo-list",
+  "version": "1.0.0",
+  "description": "Full-stack Kanban To-Do List application with authentication",
+  "main": "server/server.js",
+  "scripts": {
+    "dev": "concurrently --names \"SERVER,CLIENT\" --prefix-colors \"cyan,yellow\" \"npm run server:dev\" \"npm run client:dev\"",
+    "server:dev": "cd server && npm run dev",
+    "client:dev": "cd client && npm run dev",
+    "start": "cd server && npm start",
+    "install:all": "npm install && cd server && npm install && cd ../client && npm install",
+    "server:install": "cd server && npm install",
+    "client:install": "cd client && npm install",
+    "check-deps": "node scripts/check-deps.js"
+  },
+  "keywords": ["todo", "kanban", "fullstack", "express"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
+
