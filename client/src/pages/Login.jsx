@@ -12,7 +12,7 @@ function Login() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/')
+      navigate('/app')
     }
   }, [isAuthenticated, navigate])
 
@@ -76,9 +76,9 @@ function Login() {
             </div>
           )}
           <button type="submit" className="auth-btn">Login</button>
-          <p className="auth-link">
-            Don't have an account? <a href="/register" onClick={(e) => { e.preventDefault(); navigate('/register') }}>Register here</a>
-          </p>
+            <p className="auth-link">
+              Don't have an account? <a href="/register" onClick={(e) => { e.preventDefault(); navigate('/register') }}>Register here</a>
+            </p>
         </form>
       </div>
     </div>
