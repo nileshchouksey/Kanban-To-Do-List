@@ -14,7 +14,7 @@ function Register() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/')
+      navigate('/app')
     }
   }, [isAuthenticated, navigate])
 
@@ -43,7 +43,7 @@ function Register() {
         setSuccess('Registration successful! Redirecting...')
         login(data.token, data.user)
         setTimeout(() => {
-          navigate('/')
+          navigate('/app')
         }, 1000)
       } else {
         setError(data.error || 'Registration failed')
