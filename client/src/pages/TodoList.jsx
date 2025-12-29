@@ -8,6 +8,8 @@ function TodoList() {
   const [taskInput, setTaskInput] = useState('')
   const [currentFilter, setCurrentFilter] = useState('all')
   const [loading, setLoading] = useState(true)
+  const [editingId, setEditingId] = useState(null)
+  const [editingText, setEditingText] = useState('')
   const { user, logout } = useAuth()
 
   useEffect(() => {
@@ -85,6 +87,40 @@ function TodoList() {
       }
     } catch (error) {
       console.error('Toggle task error:', error)
+      alert('Failed to update task. Please try again.')
+    }
+  }
+
+  const startEdit = (id, text) => {
+    setEditingId(id.toString())
+    setEditingText(text)
+  }
+
+  const cancelEdit = () => {
+    setEditingId(null)
+    setEditingText('')
+  }
+
+  const saveEdit = async (id) => {
+    const text = editingText.trim()
+    if (text === '') {
+      alert('Task text cannot be empty')
+      return
+    }
+
+    try {
+      const response = await apiRequest(`/api/tasks/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify({ text })
+      })
+
+      if (response.ok) {
+        const updatedTask = await response.json()
+        setTasks(prev => prev.map(t => t.id === id.toString() ? updatedTask : t))
+        cancelEdit()
+      }
+    } catch (error) {
+      console.error('Edit task error:', error)
       alert('Failed to update task. Please try again.')
     }
   }
@@ -204,7 +240,32 @@ function TodoList() {
                   checked={task.completed}
                   onChange={() => toggleTask(task.id)}
                 />
-                <span className="task-text">{task.text}</span>
+                {editingId === task.id.toString() ? (
+                  <>
+                    <input
+                      className="task-edit-input"
+                      value={editingText}
+                      onChange={(e) => setEditingText(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') saveEdit(task.id)
+                        if (e.key === 'Escape') cancelEdit()
+                      }}
+                      autoFocus
+                    />
+                    <button className="save-btn" onClick={() => saveEdit(task.id)}>Save</button>
+                    <button className="cancel-btn" onClick={cancelEdit}>Cancel</button>
+                  </>
+                ) : (
+                  <>
+                    <span
+                      className="task-text"
+                      title="Double-click to edit"
+                    >
+                      {task.text}
+                    </span>
+                    <button className="edit-btn" onClick={() => startEdit(task.id, task.text)}>Edit</button>
+                  </>
+                )}
                 <button
                   className="delete-btn"
                   onClick={() => deleteTask(task.id)}

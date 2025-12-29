@@ -387,6 +387,20 @@ h1 {
     word-break: break-word;
 }
 
+.task-edit-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 15px;
+    outline: none;
+}
+
+.task-edit-input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.06);
+}
+
 .delete-btn {
     padding: 8px 12px;
     background: #ff6b6b;
@@ -397,6 +411,34 @@ h1 {
     cursor: pointer;
     transition: all 0.3s ease;
     font-weight: 600;
+}
+
+.edit-btn, .save-btn, .cancel-btn {
+    padding: 8px 12px;
+    margin-left: 8px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.edit-btn {
+    background: #667eea;
+    color: #fff;
+}
+
+.edit-btn:hover { transform: translateY(-1px); }
+
+.save-btn {
+    background: #28a745;
+    color: #fff;
+}
+
+.cancel-btn {
+    background: #6c757d;
+    color: #fff;
 }
 
 /* Home page styles */
