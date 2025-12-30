@@ -74,6 +74,31 @@ h1 {
     flex: 1;
 }
 
+/* Brand styles for header logo and name */
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.brand-logo {
+    height: 48px;
+    width: auto;
+}
+.brand-mark {
+    display: none;
+    height: 40px;
+    width: auto;
+}
+.brand-title {
+    color: #667eea;
+    font-weight: 800;
+    font-size: 1.25rem;
+}
+.brand-sub {
+    color: #666;
+    font-size: 0.95rem;
+}
+
 .user-info {
     display: flex;
     align-items: center;
@@ -552,6 +577,10 @@ h1 {
     .add-btn {
         width: 100%;
     }
+
+    /* Use compact mark on small screens */
+    .brand-logo { display: none; }
+    .brand-mark { display: block; }
 
     .stats-section {
         flex-direction: column;

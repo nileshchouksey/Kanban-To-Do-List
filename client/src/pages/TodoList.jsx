@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { apiRequest } from '../utils/api'
 import '../index.css'
+import TaskWaveLogo from '../../assets/taskwave-logo.svg'
+import TaskWaveMark from '../../assets/taskwave-mark.svg'
 
 function TodoList() {
   const [tasks, setTasks] = useState([])
@@ -167,10 +169,26 @@ function TodoList() {
     <div className="container">
       <div className="todo-app">
         <div className="header-section">
-          <h1>📝 My To-Do List</h1>
-          <div className="user-info">
+          <div className="brand">
+            <img src={TaskWaveLogo} alt="TaskWave logo" className="brand-logo"/>
+            <img src={TaskWaveMark} alt="TaskWave mark" className="brand-mark"/>
+            <div>
+              <div className="brand-title">TaskWave</div>
+              <div className="brand-sub">📝 My To-Do List</div>
+            </div>
+          </div>
+            <div className="user-info">
             <span>Welcome, {user?.username}!</span>
-            <button onClick={logout} className="logout-btn">Logout</button>
+            <button
+              onClick={() => {
+                if (window.confirm('Are you sure you want to log out?')) {
+                  logout()
+                }
+              }}
+              className="logout-btn"
+            >
+              Logout
+            </button>
           </div>
         </div>
         
@@ -260,6 +278,10 @@ function TodoList() {
                     <span
                       className="task-text"
                       title="Double-click to edit"
+                      onDoubleClick={() => startEdit(task.id, task.text)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => { if (e.key === 'Enter') startEdit(task.id, task.text) }}
                     >
                       {task.text}
                     </span>
