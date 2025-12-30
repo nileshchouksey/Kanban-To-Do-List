@@ -99,9 +99,7 @@ h1 {
     font-size: 0.95rem;
 }
 
-.header-controls {
-    /* removed: combined control moved back to filter section */
-}
+
 
 .user-info {
     display: flex;
@@ -522,6 +520,15 @@ h1 {
     box-shadow: 0 20px 60px rgba(0,0,0,0.25);
     text-align: center;
 }
+
+.brand-home {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+.brand-home .brand-logo { height: 56px; }
 
 .home-hero h1 {
     font-size: 3rem;
