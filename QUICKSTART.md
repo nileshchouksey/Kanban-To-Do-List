@@ -40,17 +40,26 @@ Client runs on `http://localhost:8080` (requires server to be running separately
 2. Install server dependencies:
    ```bash
    cd server
-   npm install
+  
    ```
 
-3. (Optional) Create `.env` file in `server/` directory:
+3.  cp server/.env.example server/.env
+    cp client/.env.example client/.env
+
+   Create `.env` file in `server/` directory:
    ```env
    PORT=3000
    JWT_SECRET=your-secret-key-here
    ```
 
 4. Run the application:
+    start backend 
+
    ```bash
+   cd server
+   npm run dev
+   start frontend
+   cd client 
    npm run dev
    ```
 
