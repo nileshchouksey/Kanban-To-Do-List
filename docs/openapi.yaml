@@ -1,0 +1,191 @@
+openapi: 3.0.0
+info:
+  title: TaskWave API
+  description: REST API for TaskWave Kanban task manager
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api
+    description: Local development server
+  - url: https://your-deployment-domain/api
+    description: Production server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "64f1a2b3c4d5e6f7g8h9"
+        text:
+          type: string
+          example: "Write a story"
+        status:
+          type: string
+          enum: [todo, in-progress, done]
+          example: "in-progress"
+        priority:
+          type: string
+          enum: [low, medium, high]
+          example: "medium"
+        completed:
+          type: boolean
+          example: false
+        userId:
+          type: string
+          example: "123"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2026-01-05T18:30:00.000Z"
+
+security:
+  - bearerAuth: []
+
+paths:
+  /auth/login:
+    post:
+      summary: Login and receive JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    type: object
+
+  /auth/logout:
+    post:
+      summary: Logout user
+      responses:
+        "204":
+          description: Successfully logged out
+
+  /tasks:
+    get:
+      summary: Get all tasks for current user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+    post:
+      summary: Create a new task
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                priority:
+                  type: string
+                  enum: [low, medium, high]
+                status:
+                  type: string
+                  enum: [todo, in-progress, done]
+      responses:
+        "201":
+          description: Task created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+
+  /tasks/{id}:
+    put:
+      summary: Update a task
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                priority:
+                  type: string
+                  enum: [low, medium, high]
+                status:
+                  type: string
+                  enum: [todo, in-progress, done]
+                completed:
+                  type: boolean
+      responses:
+        "200":
+          description: Task updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+    delete:
+      summary: Delete a task
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Task deleted
+
+  /tasks/clear-completed:
+    delete:
+      summary: Delete all completed tasks for current user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Number of deleted tasks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deletedCount:
+                    type: integer
+                    example: 3

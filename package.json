@@ -13,11 +13,18 @@
     "client:install": "cd client && npm install",
     "check-deps": "node scripts/check-deps.js"
   },
-  "keywords": ["todo", "kanban", "fullstack", "express"],
+  "keywords": [
+    "todo",
+    "kanban",
+    "fullstack",
+    "express"
+  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "mongoose": "^9.1.1"
   }
 }
-

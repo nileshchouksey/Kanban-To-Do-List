@@ -18,6 +18,14 @@ function TodoList() {
   const [editingPriority, setEditingPriority] = useState('low')
   const { user, logout } = useAuth()
 
+  // Normalize backend task objects
+  const normalizeTask = (t) => ({
+    ...t,
+    id: t._id?.toString() || t.id?.toString(),
+    status: t.status || 'todo',
+    priority: t.priority || 'low'
+  })
+
   useEffect(() => {
     loadTasks()
   }, [])
@@ -27,9 +35,7 @@ function TodoList() {
       const response = await apiRequest('/api/tasks')
       if (response.ok) {
         const data = await response.json()
-        // normalize tasks (ensure status and string ids)
-        const normalized = data.map(t => ({ ...t, status: t.status || 'todo', id: t.id ? t.id.toString() : t.id }))
-        setTasks(normalized)
+        setTasks(data.map(normalizeTask))
       }
     } catch (error) {
       console.error('Load tasks error:', error)
@@ -39,27 +45,21 @@ function TodoList() {
   }
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      addTask()
-    }
+    if (e.key === 'Enter') addTask()
   }
 
   const addTask = async () => {
     const taskText = taskInput.trim()
-    
-    if (taskText === '') {
-      return
-    }
+    if (!taskText) return
 
     try {
       const response = await apiRequest('/api/tasks', {
         method: 'POST',
         body: JSON.stringify({ text: taskText, priority: priorityInput, status: 'todo' })
       })
-
       if (response.ok) {
         const newTask = await response.json()
-        setTasks(prev => [newTask, ...prev])
+        setTasks(prev => [normalizeTask(newTask), ...prev])
         setTaskInput('')
         setPriorityInput('low')
       }
@@ -71,10 +71,7 @@ function TodoList() {
 
   const deleteTask = async (id) => {
     try {
-      const response = await apiRequest(`/api/tasks/${id}`, {
-        method: 'DELETE'
-      })
-
+      const response = await apiRequest(`/api/tasks/${id}`, { method: 'DELETE' })
       if (response.ok) {
         setTasks(prev => prev.filter(task => task.id !== id.toString()))
       }
@@ -87,18 +84,14 @@ function TodoList() {
   const toggleTask = async (id) => {
     const task = tasks.find(t => t.id === id.toString())
     if (!task) return
-
-    const newCompletedState = !task.completed
-
     try {
       const response = await apiRequest(`/api/tasks/${id}`, {
         method: 'PUT',
-        body: JSON.stringify({ completed: newCompletedState })
+        body: JSON.stringify({ completed: !task.completed })
       })
-
       if (response.ok) {
         const updatedTask = await response.json()
-        setTasks(prev => prev.map(t => t.id === id.toString() ? updatedTask : t))
+        setTasks(prev => prev.map(t => t.id === id.toString() ? normalizeTask(updatedTask) : t))
       }
     } catch (error) {
       console.error('Toggle task error:', error)
@@ -119,20 +112,18 @@ function TodoList() {
 
   const saveEdit = async (id) => {
     const text = editingText.trim()
-    if (text === '') {
+    if (!text) {
       alert('Task text cannot be empty')
       return
     }
-
     try {
       const response = await apiRequest(`/api/tasks/${id}`, {
         method: 'PUT',
         body: JSON.stringify({ text, priority: editingPriority })
       })
-
       if (response.ok) {
         const updatedTask = await response.json()
-        setTasks(prev => prev.map(t => t.id === id.toString() ? updatedTask : t))
+        setTasks(prev => prev.map(t => t.id === id.toString() ? normalizeTask(updatedTask) : t))
         cancelEdit()
       }
     } catch (error) {
@@ -147,22 +138,19 @@ function TodoList() {
         method: 'PUT',
         body: JSON.stringify({ status })
       })
-
       if (response.ok) {
         const updatedTask = await response.json()
-        setTasks(prev => prev.map(t => t.id === id.toString() ? updatedTask : t))
+        setTasks(prev => prev.map(t => t.id === id.toString() ? normalizeTask(updatedTask) : t))
       }
     } catch (error) {
       console.error('Change status error:', error)
       alert('Failed to move task. Please try again.')
     }
   }
+
   const clearCompleted = async () => {
     try {
-      const response = await apiRequest('/api/tasks', {
-        method: 'DELETE'
-      })
-
+      const response = await apiRequest('/api/tasks', { method: 'DELETE' })
       if (response.ok) {
         setTasks(prev => prev.filter(task => !task.completed))
       }
@@ -172,6 +160,7 @@ function TodoList() {
     }
   }
 
+  // Filtering and sorting
   let filteredTasks = tasks.filter(task => {
     if (currentFilter === 'active') return !task.completed
     if (currentFilter === 'completed') return task.completed
@@ -185,8 +174,8 @@ function TodoList() {
   if (prioritySort !== 'none') {
     const order = { low: 1, medium: 2, high: 3 }
     filteredTasks = [...filteredTasks].sort((a, b) => {
-      const pa = order[(a.priority || 'low')]
-      const pb = order[(b.priority || 'low')]
+      const pa = order[a.priority || 'low']
+      const pb = order[b.priority || 'low']
       return prioritySort === 'asc' ? pa - pb : pb - pa
     })
   }
@@ -205,6 +194,7 @@ function TodoList() {
   return (
     <div className="container">
       <div className="todo-app">
+        {/* Header */}
         <div className="header-section">
           <div className="brand">
             <img src={TaskWaveLogo} alt="TaskWave logo" className="brand-logo"/>
@@ -214,14 +204,11 @@ function TodoList() {
               <div className="brand-sub">📝 My To-Do List</div>
             </div>
           </div>
-          
           <div className="user-info">
             <span>Welcome, {user?.username}!</span>
             <button
               onClick={() => {
-                if (window.confirm('Are you sure you want to log out?')) {
-                  logout()
-                }
+                if (window.confirm('Are you sure you want to log out?')) logout()
               }}
               className="logout-btn"
             >
@@ -229,7 +216,8 @@ function TodoList() {
             </button>
           </div>
         </div>
-        
+
+        {/* Input */}
         <div className="input-section">
           <input
             type="text"
@@ -247,7 +235,6 @@ function TodoList() {
           </select>
           <button onClick={addTask} className="add-btn">Add Task</button>
         </div>
-
         <div className="filter-section">
           <button
             className={`filter-btn ${currentFilter === 'all' ? 'active' : ''}`}
@@ -298,10 +285,10 @@ function TodoList() {
           )}
         </div>
 
-        <div className="kanban-board">
-          {['todo', 'inprogress', 'done'].map(column => {
+ <div className="kanban-board">
+          {['todo', 'in-progress', 'done'].map(column => {
             const colTasks = filteredTasks.filter(t => (t.status || 'todo') === column || (column === 'done' && t.completed))
-            const title = column === 'todo' ? 'To Do' : column === 'inprogress' ? 'In Progress' : 'Done'
+            const title = column === 'todo' ? 'To Do' : column === 'in-progress' ? 'In Progress' : 'Done'
             return (
               <div className="kanban-column" key={column}>
                 <div className="kanban-column-header">
@@ -342,16 +329,16 @@ function TodoList() {
                             <div className="card-controls">
                               <div className="move-controls">
                                 {column === 'todo' && (
-                                  <button className="move-btn" onClick={() => changeStatus(task.id, 'inprogress')}>▶</button>
+                                  <button className="move-btn" onClick={() => changeStatus(task.id, 'in-progress')}>▶</button>
                                 )}
-                                {column === 'inprogress' && (
+                                {column === 'in-progress' && (
                                   <>
                                     <button className="move-btn" onClick={() => changeStatus(task.id, 'todo')}>◀</button>
                                     <button className="move-btn" onClick={() => changeStatus(task.id, 'done')}>▶</button>
                                   </>
                                 )}
                                 {column === 'done' && (
-                                  <button className="move-btn" onClick={() => changeStatus(task.id, 'inprogress')}>◀</button>
+                                  <button className="move-btn" onClick={() => changeStatus(task.id, 'in-progress')}>◀</button>
                                 )}
                               </div>
 
@@ -370,11 +357,12 @@ function TodoList() {
               </div>
             )
           })}
-        </div>
-      </div>
-    </div>
+        
+</div>
+</div>
+</div>
   )
 }
-
+      
 export default TodoList
 
