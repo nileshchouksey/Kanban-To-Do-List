@@ -9,12 +9,13 @@ require('dotenv').config();
 const connectDB = require('./db/connect');
 const User = require('./models/User');
 const Task = require('./models/Task');
+const corsOptions = require('./config/corsConfig');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET;
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../client')));
 
