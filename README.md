@@ -75,6 +75,9 @@ npm run install:all
 cd server && npm install
 cd ../client && npm install
 - Set up environment variables:
+Server (server/.env)
+Create a  .env file in the server  folder:
+
 cd server
 cp .env.example .env
 - Edit .env and set:
@@ -84,12 +87,20 @@ MONGO_URI=your-mongodb-uri
 - Run in development mode:
 npm run dev
 - Server → http://localhost:3000
+ Client (`client/.env`)
+Create a `.env` file in the `client/` folder:
+
+```env
+VITE_API_URL=Base url of the backend API
+cd client
+cp .env.example .env
+edit .env and set 
+VITE_API-URL=Base url of backend API
+
 - Client → http://localhost:8080
 - Run individually:
 npm run server:dev   # Backend only
 npm run client:dev   # Frontend only
-
-
 
 🖥️ Usage
 - Register → create account with email + password

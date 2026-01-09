@@ -43,13 +43,14 @@ Client runs on `http://localhost:8080` (requires server to be running separately
   
    ```
 
-3.  cp server/.env.example server/.env
-    cp client/.env.example client/.env
+3. Setup environment variables
+Copy the example files into : .env
+cp client/.env.example client/.env
+cp server/.env.example server/.env
 
-   Create `.env` file in `server/` directory:
-   ```env
-   PORT=3000
-   JWT_SECRET=your-secret-key-here
+Edit the  files:
+• 	In client/.env, set VITE_API_URL to your backend URL.
+• 	In server/.env, set MONGO_URI  and JWT_SECRET  with your real values.
    ```
 
 4. Run the application:
